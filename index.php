@@ -57,13 +57,27 @@ else{
 	</form>
 
 <?php
-echo "<br>";
+echo "<br><br><br>";
 require('connect_db.php');
 
-$version = mssql_query('SELECT First_name FROM CUSTOMER');
-$row = mssql_fetch_array($version);
+$query = mssql_query('SELECT * FROM FLIGHT');
 
-echo $row[0];
+if (!mssql_num_rows($query)) {
+    echo 'No records found';
+}
+else
+{
+    // Print a nice list of users in the format of:
+    // * name (username)
+
+    echo '<ul>';
+
+    while ($row = mssql_fetch_assoc($query)) {
+        echo '<li>' . $row['Flight_number'] . '</li>';
+    }
+
+    echo '</ul>';
+}
 /*
 if (isset($_POST['startDate']) && isset($_POST['endDate']) && isset($_POST['capacity'])) {
     $_SESSION['startDate'] = $_POST['startDate'];
