@@ -57,6 +57,14 @@ else{
 	</form>
 
 <?php
+echo "<br>";
+require('connect_db.php');
+
+$version = mssql_query('SELECT First_name FROM CUSTOMER');
+$row = mssql_fetch_array($version);
+
+echo $row[0];
+/*
 if (isset($_POST['startDate']) && isset($_POST['endDate']) && isset($_POST['capacity'])) {
     $_SESSION['startDate'] = $_POST['startDate'];
     $_SESSION['endDate'] = $_POST['endDate'];
@@ -258,7 +266,7 @@ function filterImage($capacity, $room_type, $room_number){
     
     
 }
-
+*/
 ?>
 </body>
 

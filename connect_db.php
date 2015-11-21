@@ -1,11 +1,14 @@
-<?php # CONNECT TO MySQL DATABASE.
+<?php # CONNECT TO MSSQL DATABASE.
 
-# Connect  on 'localhost' for user 'mike' with password 'easysteps' to database 'site_db'.
-$dbc = @mysqli_connect ( 'msdb.cs.ndsu.nodak.edu', 'csci413f15_1', 'TzcDdWc567drKA', 'csci413f15_1' )
+$server = 'msdb.cs.ndsu.nodak.edu';
 
-# Otherwise fail gracefully and explain the error. 
-OR die ( mysqli_connect_error() ) ;
+// Connect to MSSQL
+$link = mssql_connect($server, 'csci413f15_1', 'TzcDdWc567drKA');
 
-# Set encoding to match PHP script encoding.
-mysqli_set_charset( $dbc, 'utf8' ) ;
+
+if (!$link) {
+    die('Something went wrong while connecting to MSSQL');
+}
+mssql_select_db('csci413f15_1', $link);
+
 ?>
