@@ -55,9 +55,11 @@ else{
             <div>
 		</div>
 	</form>
+<div class="clearfix"></div>
 
 <?php
 echo "<br><br><br>";
+echo '<div class="alert alert-success" role="alert">Flight Search Results: </div>';
 require('connect_db.php');
 
 $query = mssql_query('SELECT * FROM FLIGHT');
@@ -70,13 +72,20 @@ else
     // Print a nice list of users in the format of:
     // * name (username)
 
-    echo '<ul>';
-
+    echo '<table class="table table-bordered">';
+        echo "<th>Departure City</th><th>Arrival City</th><th>Departure Time</th><th>Economic Class</th><th>First Class</th>";
     while ($row = mssql_fetch_assoc($query)) {
-        echo '<li>' . $row['Flight_number'] . '</li>';
+        $depDate = strtotime($row['Depature_time']);
+        echo '<tr>';
+            echo '<td>' . $row['Depature_city'] . '</td>
+            <td>' . $row['Arrival_city'] . "</td>
+            <td> Date: " . date('Y-m-d', $depDate) . "<br> Time: " . date('H:i:s', $depDate) . "</td>" .
+            '<td><button type="submit" name="buyBtn" value"buy" class="btn btn-success">Select</button></td>'.
+            '<td><button type="submit" name="buyBtn" value"buy" class="btn btn-success">Select</button></td>';
+        echo "</td>";
     }
 
-    echo '</ul>';
+    echo '</table>';
 }
 /*
 if (isset($_POST['startDate']) && isset($_POST['endDate']) && isset($_POST['capacity'])) {
