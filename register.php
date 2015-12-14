@@ -1,85 +1,21 @@
-<?php # DISPLAY COMPLETE REGISTRATION PAGE.
 
+<?php
+//missing anything to do with a password in the stored procedure
+function CreateCustomer($first_name, $middle_name, $last_name, $phone, $email, $birth_date, $address, $city, $state, $country, $zipcode) {
+session_start();
 
-include ( 'header.html' ) ;
+if ( !isset( $_SESSION[ 'userID' ] ) ){
+    include('header.html');
+}
+else{
+    include('logged_header.php');
+}
 
-# Check form submitted.
-if ( $_SERVER[ 'REQUEST_METHOD' ] == 'POST' )
-{
-  # Connect to the database.
-  require ('connect_db.php');
+//Check DB connection
+requires('connect_db.php');
+//Dont know what to do for this part
+$version = mssql_query('');
 
-  # Initialize an error array.
-  $errors = array();
-
-  # Check for a first name.
-  if ( empty( $_POST[ 'first_name' ] ) )
-  { $errors[] = 'Enter your first name.' ; }
-  else
-  { $fn = mysqli_real_escape_string( $dbc, trim( $_POST[ 'first_name' ] ) ) ; }
-
-  # Check for a last name.
-  if (empty( $_POST[ 'last_name' ] ) )
-  { $errors[] = 'Enter your last name.' ; }
-  else
-  { $ln = mysqli_real_escape_string( $dbc, trim( $_POST[ 'last_name' ] ) ) ; }
-
-  # Check for an email address:
-  if ( empty( $_POST[ 'email' ] ) )
-  { $errors[] = 'Enter your email address.'; }
-  else
-  { $e = mysqli_real_escape_string( $dbc, trim( $_POST[ 'email' ] ) ) ; }
-  
-  # Check for a phone:
-  if ( empty( $_POST[ 'phone' ] ) )
-  { $errors[] = 'Enter your phone number.'; }
-  else
-  { $ph = mysqli_real_escape_string( $dbc, trim( $_POST[ 'phone' ] ) ) ; }
-  
-
-  # Check for a password and matching input passwords.
-  if ( !empty($_POST[ 'pass1' ] ) )
-  {
-    if ( $_POST[ 'pass1' ] != $_POST[ 'pass2' ] )
-    { $errors[] = 'Passwords do not match.' ; }
-    else
-    { $p = mysqli_real_escape_string( $dbc, trim( $_POST[ 'pass1' ] ) ) ; }
-  }
-  else { $errors[] = 'Enter your password.' ; }
-
-  # Check if email address already registered.
-  if ( empty( $errors ) )
-  {
-    $q = "SELECT userID FROM user_table WHERE email='$e'" ;
-    $r = @mysqli_query ( $dbc, $q ) ;
-    if ( mysqli_num_rows( $r ) != 0 ) $errors[] = 'Email address already registered. <a href="login.php">Login</a>' ;
-  }
-
-  # On success register user inserting into 'users' database table.
-  if ( empty( $errors ) )
-  {
-    $q = "INSERT INTO user_table (first_name, last_name, phone, email, adress, zip_code, user_password) VALUES ('$fn', '$ln', '$ph', '$e', '$a', '$zip', SHA1('$p'))";
-    $r = @mysqli_query ( $dbc, $q ) ;
-    if ($r)
-    { echo '<h1>Registered!</h1><p>You are now registered.</p><p><a href="login.php">Login</a></p>'; }
-
-    # Close database connection.
-    mysqli_close($dbc);
-
-    # Display footer section and quit script:
-    # include ('footer.html');
-    exit();
-  }
-  # Or report errors.
-  else
-  {
-    echo '<h1>Error!</h1><p id="err_msg">The following error(s) occurred:<br>' ;
-    foreach ( $errors as $msg )
-    { echo " - $msg<br>" ; }
-    echo 'Please try again.</p>';
-    # Close database connection.
-    mysqli_close( $dbc );
-  }
 }
 ?>
 
@@ -94,44 +30,87 @@ if ( $_SERVER[ 'REQUEST_METHOD' ] == 'POST' )
 			</div>
 			<form class="form-horizontal" role="form" action="register.php" method="post">
                 <div class="form-group">
-					 <label for="inputFirstName3" class="col-sm-2 control-label" >First Name</label>
+					 <label for="first_name" class="col-sm-2 control-label" >First Name</label>
 					<div class="col-sm-10">
-						<input type="text" class="form-control" id="inputFirstName3" placeholder="Enter your first name" name="first_name">
+						<input type="text" class="form-control" id="first_name" placeholder="Enter your first name" name="first_name">
 					</div>
 				</div>
 				<div class="form-group">
-					 <label for="inputLastName3" class="col-sm-2 control-label" >Last Name</label>
+					 <label for="middle_name" class="col-sm-2 control-label" >Middle Name</label>
 					<div class="col-sm-10">
-						<input type="text" class="form-control" id="inputLastName3" placeholder="Enter your last name" name="last_name">
+						<input type="text" class="form-control" id="middle_name" placeholder="Enter your middle name" name="middle_name">
 					</div>
 				</div>
 				<div class="form-group">
-					 <label for="inputEmail3" class="col-sm-2 control-label" >Email</label>
+					 <label for="last_name" class="col-sm-2 control-label" >Last Name</label>
 					<div class="col-sm-10">
-						<input type="email" class="form-control" id="inputEmail3" placeholder="Enter email" name="email">
+						<input type="text" class="form-control" id="last_name" placeholder="Enter your last name" name="last_name">
+					</div>
+				</div>
+				<div class="form-group">
+					 <label for="birth_date" class="col-sm-2 control-label" >Birth Date</label>
+					<div class="col-sm-10">
+						<input type="text" class="form-control" id="birth_date" placeholder="Enter your birth date" name="birth_date">
+					</div>
+				</div>
+				
+				<div class="form-group">
+					 <label for="email" class="col-sm-2 control-label" >Email</label>
+					<div class="col-sm-10">
+						<input type="text" class="form-control" id="email" placeholder="Enter your email" name="email">
 					</div>
 				</div>
                 <div class="form-group">
-					 <label for="inputPhone3" class="col-sm-2 control-label" >Phone</label>
+					 <label for="phone" class="col-sm-2 control-label" >Phone</label>
 					<div class="col-sm-10">
-						<input type="text" class="form-control" id="inputPhone3" placeholder="Enter your phone" name="phone">
+						<input type="text" class="form-control" id="phone" placeholder="Enter your phone" name="phone">
+					</div>
+				</div>
+				 <div class="form-group">
+					 <label for="address" class="col-sm-2 control-label" >Address</label>
+					<div class="col-sm-10">
+						<input type="text" class="form-control" id="address" placeholder="Enter your address" name="address">
+					</div>
+				</div> 
+				<div class="form-group">
+					 <label for="city" class="col-sm-2 control-label" >City</label>
+					<div class="col-sm-10">
+						<input type="text" class="form-control" id="city" placeholder="What city do you live in?" name="city">
+					</div>
+				</div> 
+				<div class="form-group">
+					 <label for="city" class="col-sm-2 control-label" >State</label>
+					<div class="col-sm-10">
+						<input type="text" class="form-control" id="city" placeholder="What state do you live in?" name="city">
+					</div>
+				</div> 
+				<div class="form-group">
+					 <label for="country" class="col-sm-2 control-label" >Country</label>
+					<div class="col-sm-10">
+						<input type="text" class="form-control" id="country" placeholder="What country do you live in?" name="country">
+					</div>
+				</div> 
+				<div class="form-group">
+					 <label for="zipcode" class="col-sm-2 control-label" >Zipcode</label>
+					<div class="col-sm-10">
+						<input type="text" class="form-control" id="zipcode" placeholder="Enter your zipcode" name="zipcode">
 					</div>
 				</div>
 				<div class="form-group">
-					 <label for="inputPassword3" class="col-sm-2 control-label">Password</label>
+					 <label for="pass1" class="col-sm-2 control-label">Password</label>
 					<div class="col-sm-10">
-						<input type="password" class="form-control" id="inputPassword3" placeholder="Password" name="pass1">
+						<input type="password" class="form-control" id="pass1" placeholder="Password" name="pass1">
 					</div>
 				</div>
 				<div class="form-group">
-					 <label for="inputPassword3" class="col-sm-2 control-label">Confirm your password</label>
+					 <label for="pass2" class="col-sm-2 control-label">Confirm your password</label>
 					<div class="col-sm-10">
-						<input type="password" class="form-control" id="inputPassword3_2" placeholder="Confirm as above" name="pass2">
+						<input type="password" class="form-control" id="pass2" placeholder="Confirm as above" name="pass2">
 					</div>
 				</div>
 				<div class="form-group">
 					<div class="col-sm-offset-2 col-sm-10">
-						 <button type="submit" class="btn btn-default">Register</button>
+						 <button type="submit" class="btn btn-default" onClick="CreateCustomer(first_name.Text, middle_name.Text, last_name.Text, phone.Text, email.Text, birth_date.Text, address.Text, city.Text, state.Text, country.Text, zipcode.Text)" value="search">Register</button>
 					</div>
 				</div>
 			</form>
