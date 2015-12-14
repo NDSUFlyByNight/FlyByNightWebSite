@@ -15,7 +15,14 @@ else{
       cursor: pointer;
 }
 </style>
+
 <script type="text/javascript" src="js/reserve.js"></script>
+<script type="text/javascript">
+function changeSelect(){
+    var myselect = document.getElementById("departure_city");
+    //alert(myselect.options[myselect.selectedIndex].value);
+}
+</script>
 
 <body>
 	<form class="form-inline" method="post">
@@ -27,27 +34,53 @@ else{
         <br />
 		<div class="input-group input-group-sm">
             <div id="searchFlight">
-                <div class="col-xs-2">
-                    <span>Flight Type:<button type="button" name="flightType" value"flightType" class="btn btn-info">Round-Trip</button></span>
-                </div>
-                <div class="col-xs-2">
-                    <br>
-                    <button type="button" name="flightType" value"flightType" class="btn btn-info">One way</button>
-                </div>
-                <div class="clearfix"></div>
-                <div class="col-xs-3">
-                    <span>From: <input class="form-control" type="text" name="from" id="from" required><span>
-                </div>
-                <div class="col-xs-3">
-                    <span>To: <input class="form-control" type="text" name="from" id="from" required><span>
+                <div class="col-xs-5">
+                    <span> Flight Type:  <select class='form-control' name = 'flightType' id='flightType'>    
+                                            <option value="true">Round Trip</option>
+                                            <option value="false">One Way</option>
+                                        </select>
                 </div>
                 <div class="clearfix"></div>
+                <div class="col-xs-5">
+                    <span>From:
+                     
+                     <?php
+                     require('connect_db.php');
+                     $query = "Select Flight_number, Depature_city
+                                from FLIGHT";
+
+                        $res = mssql_query($query);
+                        echo "<select class='form-control' name = 'departure_city' id='departure_city'";
+                        while (($row = mssql_fetch_array($res)) != null)
+                        {
+                            echo "<option value=" . $row['Depature_city'] .">". $row['Depature_city'] . "</option>";
+                        }
+                        echo "</select>";
+                        ?></span>
+                </div>
+                <div class="col-xs-5">
+                    <span>To: 
+                    <?php
+                        $query = "Select Flight_number, Arrival_city
+                                from FLIGHT";
+
+                        $res = mssql_query($query);
+                        echo "<select class='form-control' name = 'Arrival_city' id='Arrival_city'";
+                        while (($row = mssql_fetch_array($res)) != null)
+                        {
+                            echo "<option value=" . $row['Arrival_city'] .">". $row['Arrival_city'] . "</option>";
+                        }
+                        echo "</select>";
+                        ?></span>    
+                </div>
+                <div class="clearfix"></div>
+                <?php /*
                 <div class="col-xs-3">
                     <span>Depart Date: <input class="form-control" type="text" name="departDate" id="departDate" required><span>
                 </div>
                 <div class="col-xs-3">
                     <span>Return Date: <input class="form-control" type="text" name="returnDate" id="returnDate" required><span>
-                </div>
+                </div>*/?>
                 <div class="col-xs-2">
                     <br>
                     <button type="submit" name="searchBtn" value"search" class="btn btn-success">Search Flights</button>
@@ -57,35 +90,46 @@ else{
 	</form>
 <div class="clearfix"></div>
 
+
 <?php
-echo "<br><br><br>";
-echo '<div class="alert alert-success" role="alert">Flight Search Results: </div>';
-require('connect_db.php');
+if (isset($_POST['flightType']) && isset($_POST['departure_city']) && isset($_POST['Arrival_city'])) {
+    $_SESSION['flightType'] = $_POST['flightType'];
+    $_SESSION['departure_city'] = $_POST['departure_city'];
+    $_SESSION['Arrival_city'] = $_POST['Arrival_city'];
 
-$query = mssql_query('SELECT * FROM FLIGHT');
+    echo "<br><br><br>";
+    echo '<div class="alert alert-success" role="alert">Flight Search Results: </div>';
+    require('connect_db.php');
 
-if (!mssql_num_rows($query)) {
-    echo 'No records found';
-}
-else
-{
-    // Print a nice list of users in the format of:
-    // * name (username)
+    $query = mssql_query('SELECT * FROM FLIGHT
+                        WHERE Depature_city = ' . "'" . $_SESSION['departure_city'] ."'". 'and
+                        Arrival_city = ' . "'" . $_SESSION['Arrival_city'] . "'" . 'and 
+                        Round_trip = ' ."'". $_SESSION['flightType'] . "'");
 
-    echo '<table class="table table-bordered">';
-        echo "<th>Departure City</th><th>Arrival City</th><th>Departure Time</th><th>Economic Class</th><th>First Class</th>";
-    while ($row = mssql_fetch_assoc($query)) {
-        $depDate = strtotime($row['Depature_time']);
-        echo '<tr>';
-            echo '<td>' . $row['Depature_city'] . '</td>
-            <td>' . $row['Arrival_city'] . "</td>
-            <td> Date: " . date('Y-m-d', $depDate) . "<br> Time: " . date('H:i:s', $depDate) . "</td>" .
-            '<td><button type="submit" name="buyBtn" value"buy" class="btn btn-success">Select</button></td>'.
-            '<td><button type="submit" name="buyBtn" value"buy" class="btn btn-success">Select</button></td>';
-        echo "</td>";
+    if (!mssql_num_rows($query)) {
+        echo 'No records found';
     }
+    else
+    {
+        // Print a nice list of users in the format of:
+        // * name (username)
 
-    echo '</table>';
+        echo '<form name="selected_flight">
+        <table class="table table-bordered">';
+            echo "<th>Departure City</th><th>Arrival City</th><th>Departure Time</th><th>Buy Ticket</th>";
+        while ($row = mssql_fetch_assoc($query)) {
+            $depDate = strtotime($row['Depature_time']);
+            echo '<tr>';
+                echo '<td>' . $row['Depature_city'] . '</td>
+                <td>' . $row['Arrival_city'] . "</td>
+                <td> Date: " . date('Y-m-d', $depDate) . "<br> Time: " . date('H:i:s', $depDate) . "</td>" .
+                '<td><a href="selectedFlight.php?flightNumber=' . $row['Flight_number']. '">Buy Ticket</td>';
+            echo "</td>";
+        }
+
+        echo '</table>
+        </form>';
+    }
 }
 /*
 if (isset($_POST['startDate']) && isset($_POST['endDate']) && isset($_POST['capacity'])) {
