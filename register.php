@@ -1,7 +1,7 @@
 
 <?php
 //missing anything to do with a password in the stored procedure
-function CreateCustomer($first_name, $middle_name, $last_name, $phone, $email, $birth_date, $address, $city, $state, $country, $zipcode) {
+//function CreateCustomer($first_name, $middle_name, $last_name, $phone, $email, $birth_date, $address, $city, $state, $country, $zipcode) {
 session_start();
 
 if ( !isset( $_SESSION[ 'userID' ] ) ){
@@ -12,13 +12,11 @@ else{
 }
 
 //Check DB connection
-requires('connect_db.php');
+//requires('connect_db.php');
 //Dont know what to do for this part
-$version = mssql_query('');
-
-}
 ?>
 
+<body>
 <!-- Display body section with sticky form. -->
 <div class="container">
 	<div class="row clearfix">
@@ -110,12 +108,13 @@ $version = mssql_query('');
 				</div>
 				<div class="form-group">
 					<div class="col-sm-offset-2 col-sm-10">
-						 <button type="submit" class="btn btn-default" onClick="CreateCustomer(first_name.Text, middle_name.Text, last_name.Text, phone.Text, email.Text, birth_date.Text, address.Text, city.Text, state.Text, country.Text, zipcode.Text)" value="search">Register</button>
+						 <button type="submit" class="btn btn-default" value="Register">Register</button>
 					</div>
 				</div>
 			</form>
 		</div>
 	</div>
 </div>
-
+</body>
+</html>
 
